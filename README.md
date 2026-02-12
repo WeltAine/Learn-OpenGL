@@ -1,2 +1,2 @@
 # Learn-OpenGL
-学习LearnOpenGL
+个人学习LearnOpenGL用
