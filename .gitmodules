@@ -1,0 +1,9 @@
+[submodule "Learn-OpenGL/Dependency/GLFW"]
+	path = Learn-OpenGL/Dependency/GLFW
+	url = https://github.com/glfw/glfw.git
+[submodule "Learn-OpenGL/Dependency/ImGui"]
+	path = Learn-OpenGL/Dependency/ImGui
+	url = https://github.com/ocornut/imgui.git
+[submodule "Learn-OpenGL/Dependency/spdlog"]
+	path = Learn-OpenGL/Dependency/spdlog
+	url = https://github.com/gabime/spdlog.git
