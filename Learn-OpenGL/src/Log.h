@@ -1,0 +1,26 @@
+#pragma once
+
+#include <memory>
+#include <spdlog/spdlog.h>
+
+namespace LearnOpenGL {
+
+	class Log
+	{
+	public:
+		inline static void Init();
+
+		inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; };
+
+	private:
+		static bool isInited;
+		static std::shared_ptr<spdlog::logger> s_Logger;
+	};
+
+}
+
+#define LOG_TRACE(...) LearnOpenGL::Log::GetLogger()->trace(__VA_ARGS__)
+#define LOG_INFO(...) LearnOpenGL::Log::GetLogger()->info(__VA_ARGS__)
+#define LOG_WARN(...) LearnOpenGL::Log::GetLogger()->warn(__VA_ARGS__)
+#define LOG_ERROR(...) LearnOpenGL::Log::GetLogger()->error(__VA_ARGS__)
+#define LOG_FATEL(...) LearnOpenGL::Log::GetLogger()->fatal(__VA_ARGS__)
