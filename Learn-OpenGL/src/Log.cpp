@@ -4,6 +4,7 @@
 
 namespace LearnOpenGL {
 
+	bool Log::isInited = false;
 	std::shared_ptr<spdlog::logger> Log::s_Logger;
 
 	void Log::Init() {

@@ -59,6 +59,11 @@ project "Learn-OpenGL"
         systemversion "latest"
         cppdialect "C++20"
 
+        defines
+        {
+            "GLFW_INCLUDE_NONE" --让glfw不包含OpenGL头文件，因为我们用的是Glad来加载OpenGL函数，而且由glfw引入头文件会报错（不理解为什么要这么处理）
+        }
+
     filter "configurations:Debug" --暂时没用，但先写着
         runtime "Debug"
         symbols "On"

@@ -8,7 +8,7 @@ namespace LearnOpenGL {
 	class Log
 	{
 	public:
-		inline static void Init();
+		static void Init();
 
 		inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; };
 
