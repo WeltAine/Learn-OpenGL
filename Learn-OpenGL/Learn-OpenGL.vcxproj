@@ -145,6 +145,7 @@
     <ClInclude Include="src\Log.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\ShaderReader.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\test.cpp" />

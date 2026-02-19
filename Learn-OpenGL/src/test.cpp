@@ -4,6 +4,11 @@
 #include <glad/gl.h>
 //看来还有引入顺序的要求
 
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
+
 #include "Log.h"
 #include "ShaderReader.h"
 
@@ -49,7 +54,6 @@ int main() {
 	int status = gladLoadGL((GLADloadfunc)glfwGetProcAddress);
 	LEARNOPENGL_ASSERT(status, "Failed to initialize GLAFD!");
 
-
 	glViewport(0, 0, 1280, 720);
 	
 
@@ -66,6 +70,9 @@ int main() {
 
 
 
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 
 	// Shader 
@@ -73,23 +80,21 @@ int main() {
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-	//const char* vertexShaderSource = LearnOpenGL::ShaderReader::Read("O:/CppProgram/Learn-OpenGL/Learn-OpenGL/Shader/vertexshader.txt").c_str();//函数返回的对象在此上下文中会变成一个将亡值
 	std::string sourceCode = LearnOpenGL::ShaderReader::Read("O:/CppProgram/Learn-OpenGL/Learn-OpenGL/Shader/vertexshader.txt");
 	const char* vertexShaderSource = sourceCode.c_str();
 
-
-
 	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
+
 
 	// 片元着色器
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	//const char* fragmentShaderSource = LearnOpenGL::ShaderReader::Read("O:/CppProgram/Learn-OpenGL/Learn-OpenGL/Shader/fragmentshader.txt").c_str();//函数返回的对象在此上下文中会变成一个将亡值
 	sourceCode = LearnOpenGL::ShaderReader::Read("O:/CppProgram/Learn-OpenGL/Learn-OpenGL/Shader/fragmentshader.txt");
 	const char* fragmentShaderSource = sourceCode.c_str();
 
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
+
 
 	// 着色器编译
 	int _success;
@@ -128,56 +133,32 @@ int main() {
 	glGenVertexArrays(1, &VAO_1);
 	glBindVertexArray(VAO_1);
 
+
 	// VBO
 	float vertexs[] = {
-		0.5f,  0.5f, 0.0f,   // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f,   // top left 
-
-		0.5f,  0.5f, 0.0f,   // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f,  0.5f, 0.0f,   // top left 
+		// 顶点					// 颜色				
+		0.0f, 0.5f, 0.0f,		0.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f
 	};
-	unsigned int points_VBO;
-	glGenBuffers(1, &points_VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, points_VBO);
+	unsigned int vertexs_VBO;
+	glGenBuffers(1, &vertexs_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexs_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexs), vertexs, GL_STATIC_DRAW);
 	// 先“生成”一个空缓冲区
 	// 通过绑定（binding）操作将其设为 OpenGL 状态机中的当前缓冲区
 	// 随后将顶点数据复制到该当前绑定的缓冲区中
 
 	// 显存解读
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);//为显存中数据被vectorShader中的aPos使用做准备
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);//为显存中数据被vectorShader中的aPos使用做准备
 	glEnableVertexAttribArray(0);
-
-
-
-	float colors[] = {
-		0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-	};
-	unsigned int colors_VBO;
-	glGenBuffers(1, &colors_VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, colors_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);//为显存中数据被vectorShader中的_colour使用做准备
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));//为显存中数据被vectorShader中的_colour使用做准备
 	glEnableVertexAttribArray(1);
-
-
 
 
 	// EBO 和Unity一样左手环绕序(顺时针环绕序)
 	int indices[] = {
-		//0, 1, 3,   // first triangle
-		1, 2, 3,    // second triangle
-		4, 5, 6
+		0, 1, 2
 	};
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
@@ -187,6 +168,10 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+
+	int xOffsetLocation = glGetUniformLocation(shaderProgram, "xOffset");
+	float xOffset = 0.0f;
 
 
 	while (!glfwWindowShouldClose(window)) {
@@ -203,17 +188,30 @@ int main() {
 		#pragma endregion
 
 
-
 		#pragma region 渲染指令
 		glBindVertexArray(VAO_1);
+		
+		glUniform1f(xOffsetLocation, xOffset);
 
 		//glUseProgram(shaderProgram);
 		//glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		#pragma endregion
 
+		#pragma region 交互
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("水平偏移");
+			ImGui::SliderFloat("float", &xOffset, -0.5f, 0.5f);
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		#pragma endregion
 
 
 		#pragma region 轮询事件队列 & 交换缓冲
@@ -224,8 +222,7 @@ int main() {
 	}
 
 	glDeleteVertexArrays(1, &VAO_1);
-	glDeleteBuffers(1, &points_VBO);
-	glDeleteBuffers(1, &colors_VBO);
+	glDeleteBuffers(1, &vertexs_VBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(shaderProgram);
 
