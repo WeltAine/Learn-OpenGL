@@ -140,10 +140,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\ShaderReader.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Log.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ShaderReader.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\test.cpp" />
   </ItemGroup>
