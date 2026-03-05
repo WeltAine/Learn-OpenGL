@@ -143,12 +143,14 @@
     <ClInclude Include="src\ShaderReader.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\ShaderReader.cpp" />
     <ClCompile Include="src\Log.cpp" />
-    <ClCompile Include="src\test.cpp" />
+    <ClCompile Include="src\Getting Started\test.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Dependency\GLFW\GLFW\GLFW.vcxproj">
@@ -160,6 +162,9 @@
     <ProjectReference Include="Dependency\ImGui\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\Getting Started\SS.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

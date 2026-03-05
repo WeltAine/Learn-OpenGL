@@ -11,6 +11,7 @@
 
 #include "Log.h"
 #include "ShaderReader.h"
+#include "stb_image.h"
 
 
 namespace LearnOpenGL {
@@ -57,13 +58,12 @@ int main() {
 	glViewport(0, 0, 1280, 720);
 	
 
-	//glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
+	// 这两者有什么区别
+	//glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) //实际的绘制尺寸，这却决于DPI和分配的虚拟窗口尺寸
 	//	{
 	//		glViewport(0, 0, width, height);
 	//	});
-
-
-	glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
+	glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height) // 操作系统上的虚拟窗口尺寸
 		{
 			glViewport(0, 0, width, height);
 		});
@@ -136,10 +136,11 @@ int main() {
 
 	// VBO
 	float vertexs[] = {
-		// 顶点					// 颜色				
-		0.0f, 0.5f, 0.0f,		0.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f
+		// 顶点					// 颜色				//UV
+		-0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+		 0.5f, 0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
 	};
 	unsigned int vertexs_VBO;
 	glGenBuffers(1, &vertexs_VBO);
@@ -149,16 +150,19 @@ int main() {
 	// 通过绑定（binding）操作将其设为 OpenGL 状态机中的当前缓冲区
 	// 随后将顶点数据复制到该当前绑定的缓冲区中
 
-	// 显存解读
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);//为显存中数据被vectorShader中的aPos使用做准备
+	// 显存解读（解读哪一个VBO对象取决于，但是状态机绑定哪一个VBO对象，所以这是一个代码上下文敏感的步骤）
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);//为显存中数据被vectorShader中的aPos使用做准备
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));//为显存中数据被vectorShader中的_colour使用做准备
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));//为显存中数据被vectorShader中的_colour使用做准备
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 
 	// EBO 和Unity一样左手环绕序(顺时针环绕序)
 	int indices[] = {
-		0, 1, 2
+		0, 1, 2,
+		0, 3, 1
 	};
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
@@ -172,6 +176,21 @@ int main() {
 
 	int xOffsetLocation = glGetUniformLocation(shaderProgram, "xOffset");
 	float xOffset = 0.0f;
+
+
+	// 纹理
+	unsigned int texture = 0;
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load("O:/CppProgram/Learn-OpenGL/Learn-OpenGL/src/Getting Started/SS.jpg", &width, &height, &nrChannels, 0);
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	//glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels);
+	//glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 
 
 	while (!glfwWindowShouldClose(window)) {
@@ -196,7 +215,7 @@ int main() {
 		//glUseProgram(shaderProgram);
 		//glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		#pragma endregion
 
