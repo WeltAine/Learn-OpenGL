@@ -16,6 +16,7 @@ IncludeDir["spdlog"] = "Learn-OpenGL/Dependency/spdlog/include"
 IncludeDir["GLFW"] = "Learn-OpenGL/Dependency/GLFW/include"
 IncludeDir["ImGui"] = "Learn-OpenGL/Dependency/ImGui"
 IncludeDir["Glad"] = "Learn-OpenGL/Dependency/Glad/include"
+IncludeDir["glm"] = "Learn-OpenGL/Dependency/glm"
 
 include "Learn-OpenGL/Dependency/GLFW"
 include "Learn-OpenGL/Dependency/ImGui"
@@ -38,7 +39,8 @@ project "Learn-OpenGL"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.Glad}"
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.glm}"
     }
 
     links{
@@ -52,6 +54,8 @@ project "Learn-OpenGL"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{IncludeDir.glm}/**.hpp",
+        "%{IncludeDir.glm}/**.inl"
     }
 
 

@@ -7,3 +7,6 @@
 [submodule "Learn-OpenGL/Dependency/spdlog"]
 	path = Learn-OpenGL/Dependency/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "Learn-OpenGL/Dependency/glm"]
+	path = Learn-OpenGL/Dependency/glm
+	url = https://github.com/g-truc/glm.git

@@ -13,6 +13,15 @@
 #include "ShaderReader.h"
 #include "stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm/ext/vector_float3.hpp> // vec3
+#include <glm/ext/matrix_float4x4.hpp> // mat4x4
+#include <glm/ext/matrix_transform.hpp> // translate, rotate, scale, identity
+#include <glm/gtc/type_ptr.hpp>
+
+
+
+
 
 namespace LearnOpenGL {
 
@@ -211,6 +220,14 @@ int main() {
 		glBindVertexArray(VAO_1);
 		
 		glUniform1f(xOffsetLocation, xOffset);
+
+
+		//变换(glm的translate，rotate，scale是右乘)
+		glm::mat4 transform{ 1.0f };
+		transform = glm::translate(transform, glm::vec3(0.5f, 0.0f, 0.0f));
+		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3{0.0f, 0.0f, 1.0f});
+
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
 
 		//glUseProgram(shaderProgram);
 		//glBindVertexArray(VAO);
