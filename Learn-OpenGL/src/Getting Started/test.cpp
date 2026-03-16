@@ -1,3 +1,5 @@
+//! glm和openGL使用的是右手坐标系（z向外）
+
 #include "Core.h"
 
 #include <GLFW/glfw3.h>
@@ -33,6 +35,19 @@ namespace LearnOpenGL {
 		}
 
 	}
+}
+
+
+glm::mat4& Transform(const glm::vec3 position, const glm::vec3 rotation) {
+
+	glm::mat4 pitch = glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 yaw = glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 roll = glm::rotate(glm::identity<glm::mat4>(), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	glm::mat4 transform = glm::translate(glm::identity<glm::mat4>(), position) * pitch * yaw * roll;
+
+	return transform;
+
 }
 
 
@@ -81,7 +96,7 @@ int main() {
 
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330");
+	ImGui_ImplOpenGL3_Init("#version 330"); 
 
 
 	// Shader 
@@ -144,13 +159,48 @@ int main() {
 
 
 	// VBO
+	//float vertexs[] = {
+	//	// 顶点					// 颜色				//UV
+	//	-0.5f, 0.5f,  0.0f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+	//	 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+	//	-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+	//	 0.5f, 0.5f,  0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	//};
 	float vertexs[] = {
 		// 顶点					// 颜色				//UV
-		-0.5f, 0.5f, 0.0f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-		 0.5f, 0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+		0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+		
+		-0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+		0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+		-0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		-0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+
+		0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f,		0.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		0.5f, 0.5f, 0.5f,		0.0f, 0.0f, 0.0f,	1.0f, 1.0f
+		
 	};
+
 	unsigned int vertexs_VBO;
 	glGenBuffers(1, &vertexs_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexs_VBO);
@@ -169,10 +219,32 @@ int main() {
 
 
 	// EBO 和Unity一样左手环绕序(顺时针环绕序)
+	//int indices[] = {
+	//	0, 1, 2,
+	//	0, 3, 1
+	//};
 	int indices[] = {
-		0, 1, 2,
-		0, 3, 1
+	0, 1, 2,
+	1, 3, 2,
+
+	0 + 4, 1 + 4, 2 + 4,
+	1 + 4, 3 + 4, 2 + 4,
+
+	
+	0 + 8, 1 + 8, 2 + 8,
+	1 + 8, 3 + 8, 2 + 8,
+
+	0 + 12, 1 + 12, 2 + 12,
+	1 + 12, 3 + 12, 2 + 12,
+
+	0 + 16, 1 + 16, 2 + 16,
+	1 + 16, 3 + 16, 2 + 16,
+
+	0 + 20, 1 + 20, 2 + 20,
+	1 + 20, 3 + 20, 2 + 20
+	
 	};
+
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -195,21 +267,46 @@ int main() {
 	glGenTextures(1, &texture);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	//! 仅作用于「当前激活的纹理单元」中「绑定到指定 target」的纹理对象
 	//glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels);
 	//glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	//! 只作用于「当前激活的纹理单元」中「绑定到指定目标」的纹理对象，且绑定的纹理对象必须是有效的（非 0）
+	//! 感觉OpenGL所谓的对象，是一个更抽象的概念，好吧就是Object，之后的bind决定它要被什么类型“继承”（bind就像真正指定对象类型的一步）（我相信这种比喻时错的） 
+	
 
+
+	//transform数据
+	glm::vec3 position[]{
+		{0.0f, 0.0f, -4.0f},
+		{0.0f, 2.0f, -4.0f},
+		{0.0f, -2.0f, -4.0f},
+		{2.0f, 0.0f, -4.0f},
+		{-2.0f, 0.0f, -4.0f}
+	};
+
+	glm::vec3 rotation[]{
+		{0.0f, 0.0f, 0.0f},
+		{-30.0f, 0.0f, 0.0f},
+		{30.0f, 0.0f, 0.0f},
+		{0.0f, 30.0f, 0.0f},
+		{0.0f, -30.0f, 0.0f}
+	};
 
 
 	while (!glfwWindowShouldClose(window)) {
+
+		glEnable(GL_DEPTH_TEST);
 
 		// 在每一帧开始时，我们都需要进行清屏操作，否则屏幕上会残留上一帧的渲染结果（除非这正是你想要的效果，但通常情况下并非如此）。
 		// 我们可以调用 glClear 函数来清空屏幕的颜色缓冲，并通过传入缓冲位（Buffer Bit）来指定要清空的缓冲类型。
 		// 可选的位包括 GL_COLOR_BUFFER_BIT、GL_DEPTH_BUFFER_BIT 和 GL_STENCIL_BUFFER_BIT。目前我们只关心颜色值，因此只需清空颜色缓冲即可。
 		// 调用 glClearColor 来设置清屏所用的颜色。每当我们调用 glClear 来清除颜色缓冲时，整个颜色缓冲都会被填充为 glClearColor 所设置的颜色。
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		#pragma region 特定输入轮询
 		LearnOpenGL::ProcessInput(window);
@@ -221,18 +318,36 @@ int main() {
 		
 		glUniform1f(xOffsetLocation, xOffset);
 
+		
+		for(int i = 0; i < 5; i++)
+		{
 
-		//变换(glm的translate，rotate，scale是右乘)
-		glm::mat4 transform{ 1.0f };
-		transform = glm::translate(transform, glm::vec3(0.5f, 0.0f, 0.0f));
-		transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3{0.0f, 0.0f, 1.0f});
+			//变换(glm的translate，rotate，scale是右乘)
+			glm::mat4 model{ 1.0f };
+			model = Transform(position[i], rotation[i] + glm::vec3{glfwGetTime() * 10, 0.0f, 0.0f});
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
+			glm::mat4 view{1.0f};
+			view = glm::translate(view, {0.0f, 0.0f, 0.0f});
+			view = glm::rotate(view, glm::radians(0.0f), glm::vec3{1.0f, 0.0f, 0.0f});
 
-		//glUseProgram(shaderProgram);
-		//glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glm::mat4 project{1.0f};
+			project = glm::perspective(
+				glm::radians(60.0f),
+				16.0f / 9.0f,
+				0.1f,
+				1000.0f
+			);
+
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "project"), 1, GL_FALSE, glm::value_ptr(project));
+
+			//glUseProgram(shaderProgram);
+			//glBindVertexArray(VAO);
+			//glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		
+		}
 
 		#pragma endregion
 
@@ -267,7 +382,3 @@ int main() {
 	return 0;
 
 }
-
-
-
-
